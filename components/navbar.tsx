@@ -20,7 +20,7 @@ export function Navbar() {
             <img
               src="/bss logo.png"
               alt="Logo"
-              className="h-8 w-8"
+              className="h-11 w-11"
             />
           </Link>
 

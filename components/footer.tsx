@@ -22,10 +22,11 @@ export function Footer() {
             viewport={{ once: true }}
             className="flex items-center space-x-2"
           >
-            <span className="font-heading text-2xl font-bold">GapMap</span>
-            <span className="rounded-full bg-primary px-2 py-1 text-xs font-bold text-primary-foreground">
-              AI
-            </span>
+          <img
+              src="/bss logo.png"
+              alt="Logo"
+              className="h-13 w-13"
+            />
           </motion.div>
 
           <motion.div

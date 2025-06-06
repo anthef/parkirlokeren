@@ -70,8 +70,8 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="mb-6 font-heading text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
             >
-              Find Your Perfect{" "}
-              <AnimatedGradientText>Business Opportunity</AnimatedGradientText>
+              Kelola Parkir dengan{" "}
+              <AnimatedGradientText>Teknologi Terdepan</AnimatedGradientText>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -79,9 +79,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground md:text-xl"
             >
-              GapMap AI analyzes market trends, consumer needs, and your
-              personal profile to identify tailored business opportunities with
-              the highest potential for success.
+              BSS Parking menganalisis kebutuhan parkir, perilaku pengguna, dan data lokasi secara real-time untuk menghadirkan solusi parkir cerdas yang efisien, aman, dan sesuai dengan kebutuhan Anda.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
