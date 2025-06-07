@@ -18,42 +18,43 @@ import Link from "next/link";
 
 const faqs = [
   {
-    question: "How does GapMap AI find business opportunities?",
+    question: "Apa itu BSS Parking dan bagaimana cara kerjanya?",
     answer:
-      "GapMap AI uses advanced algorithms and real-time market data from Sonar API to analyze market trends, consumer needs, and competition. It then matches these opportunities with your personal profile, skills, and preferences to find the perfect business match.",
-    icon: "📊",
+      "BSS Parking adalah sistem parkir cerdas yang membantu pengguna menemukan dan memesan tempat parkir secara real-time. Dengan bantuan sensor dan aplikasi mobile/web, pengguna dapat melihat ketersediaan parkir, memesan tempat, dan melakukan pembayaran secara digital.",
+    icon: "🅿️",
   },
   {
-    question: "How accurate are the business opportunities provided?",
+    question: "Apakah saya bisa melihat ketersediaan parkir sebelum sampai lokasi?",
     answer:
-      "Our AI analyzes thousands of data points from reliable sources with clear citations. While we can't guarantee success (no business is risk-free), our recommendations are based on comprehensive market research and real-world data.",
-    icon: "🎯",
+      "Ya, BSS Parking menyediakan informasi ketersediaan parkir secara real-time sehingga Anda dapat mengetahui apakah tempat parkir tersedia sebelum tiba di lokasi.",
+    icon: "📍",
   },
   {
-    question: "Can I use GapMap AI for my existing business?",
+    question: "Bagaimana sistem pembayarannya?",
     answer:
-      "GapMap AI can analyze your existing business and identify growth opportunities, new market segments, product extensions, or operational improvements to help your business thrive.",
-    icon: "🚀",
+      "Pembayaran dapat dilakukan secara digital melalui aplikasi BSS Parking menggunakan e-wallet, kartu kredit, atau metode pembayaran lainnya yang tersedia.",
+    icon: "💳",
   },
   {
-    question: "How much does it cost to start the businesses recommended?",
+    question: "Apakah sistem ini hanya tersedia di kota tertentu?",
     answer:
-      "The initial investment varies widely depending on the business type. We provide detailed financial projections including startup costs, operational expenses, and potential revenue for each opportunity so you can choose one that fits your budget.",
-    icon: "💰",
+      "Untuk saat ini, BSS Parking tersedia di beberapa kota besar dan terus diperluas ke wilayah lain. Anda dapat melihat daftar lokasi yang tersedia di dalam aplikasi.",
+    icon: "🌐",
   },
   {
-    question: "Can I get a refund if I'm not satisfied?",
+    question: "Apakah aman meninggalkan kendaraan di area parkir BSS?",
     answer:
-      "Yes, we offer a 14-day money-back guarantee if you're not satisfied with our service. Simply contact our support team within 14 days of your purchase for a full refund.",
-    icon: "🔄",
+      "Kami bekerja sama dengan penyedia parkir yang terpercaya dan dilengkapi dengan sistem keamanan seperti CCTV dan petugas keamanan. Namun, selalu disarankan untuk mengunci kendaraan dengan benar.",
+    icon: "🔒",
   },
   {
-    question: "How often is the market data updated?",
+    question: "Bisakah saya membatalkan reservasi parkir?",
     answer:
-      "Our Sonar API integration provides real-time market data that is continuously updated. This ensures that the business opportunities we recommend are based on the latest market trends and consumer needs.",
-    icon: "⏱️",
+      "Ya, Anda bisa membatalkan reservasi parkir sebelum waktu parkir dimulai melalui aplikasi. Syarat dan ketentuan pembatalan berlaku.",
+    icon: "❌",
   },
 ];
+
 
 export function FaqSection() {
   return (
@@ -75,7 +76,7 @@ export function FaqSection() {
             Frequently Asked Questions
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Find answers to common questions about GapMap AI and how it can help
+            Find answers to common questions about BSS Parking and how it can help
             you discover your perfect business opportunity.
           </p>
         </motion.div>
@@ -129,7 +130,7 @@ export function FaqSection() {
               Our dedicated support team is here to help you with any other
               questions you might have.
             </p>
-            <Link href="mailto:m.azzam.azis@gmail.com">
+            <Link href="mailto:anthonyef09@gmail.com">
               <Button className="px-6">
                 Contact Support
                 <RiArrowRightLine className="ml-2 h-4 w-4" />

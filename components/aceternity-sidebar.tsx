@@ -17,6 +17,7 @@ import {
   RiLogoutBoxLine,
   RiArrowLeftSLine,
   RiArrowRightSLine,
+  RiInfoCardFill,
 } from 'react-icons/ri';
 
 interface NavItem {
@@ -32,14 +33,9 @@ const navItems: NavItem[] = [
     icon: <RiHomeLine className="h-5 w-5" />,
   },
   {
-    title: 'New Project',
-    href: '/dashboard/new-project',
-    icon: <RiAddCircleLine className="h-5 w-5" />,
-  },
-  {
-    title: 'My Projects',
-    href: '/dashboard/projects',
-    icon: <RiMessage2Line className="h-5 w-5" />,
+    title: 'Detail Monitoring',
+    href: '/detail-monitoring',
+    icon: <RiInfoCardFill className="h-5 w-5" />,
   },
   {
     title: 'Settings',
@@ -91,9 +87,11 @@ export function AceternitySidebar({ email }: { email: string }) {
           <div className="px-3 py-2">
             <div className="mb-6 flex items-center px-4">
               {!isCollapsed && (
-                <h2 className="text-lg font-semibold tracking-tight">
-                  GapMap AI
-                </h2>
+                <img
+              src="/bss logo.png"
+              alt="Logo"
+              className="h-11 w-11"
+            />
               )}
               {isCollapsed && <span className="text-lg font-semibold">G</span>}
             </div>

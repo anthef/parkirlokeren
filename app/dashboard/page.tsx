@@ -11,31 +11,59 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RiAddCircleLine, RiArrowRightLine } from 'react-icons/ri';
+import { Badge } from '@/components/ui/badge';
+import { 
+  RiCarLine, 
+  RiEyeLine, 
+  RiTimeLine, 
+  RiAlertLine,
+  RiCheckLine,
+  RiCloseLine,
+  RiArrowRightLine,
+  RiCameraLine,
+  RiParkingBoxLine,
+  RiShieldCheckLine
+} from 'react-icons/ri';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/useAuth';
-import { createClient } from '@/utils/supabase/client';
 
-// Define the Project type
-interface Project {
+// Define types for ALPR data
+interface ParkingEntry {
   id: number;
-  title: string;
-  description: string;
-  created_at: string;
-  status: 'SUCCESS' | 'IN_PROGRESS' | 'CANCELLED';
-  user_id: string;
+  license_plate: string;
+  entry_time: string;
+  exit_time?: string;
+  status: 'PARKED' | 'EXITED' | 'VIOLATION';
+  confidence: number;
+  camera_id: string;
+  vehicle_type: string;
+  image_url?: string;
+}
+
+interface DashboardStats {
+  totalVehicles: number;
+  currentlyParked: number;
+  todayEntries: number;
+  violations: number;
+  averageStayTime: string;
+  occupancyRate: number;
 }
 
 export default function DashboardPage() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const { user } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [entries, setEntries] = useState<ParkingEntry[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalVehicles: 0,
+    currentlyParked: 0,
+    todayEntries: 0,
+    violations: 0,
+    averageStayTime: '0h 0m',
+    occupancyRate: 0
+  });
   const [loading, setLoading] = useState(true);
-
-  // Initialize Supabase client
-  const supabase = createClient();
 
   useEffect(() => {
     const successMessage = searchParams.get('success');
@@ -47,33 +75,63 @@ export default function DashboardPage() {
     }
   }, [searchParams, toast, user]);
 
-  // Fetch projects from Supabase
+  // Simulate fetching ALPR data (replace with actual API call)
   useEffect(() => {
-    const fetchProjects = async () => {
-      if (!user) return;
-
+    const fetchParkingData = async () => {
       try {
         setLoading(true);
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock data
+        const mockEntries: ParkingEntry[] = [
+          {
+            id: 1,
+            license_plate: 'B 1234 ABC',
+            entry_time: new Date().toISOString(),
+            status: 'PARKED',
+            confidence: 0.95,
+            camera_id: 'CAM-001',
+            vehicle_type: 'Car'
+          },
+          {
+            id: 2,
+            license_plate: 'B 5678 DEF',
+            entry_time: new Date(Date.now() - 3600000).toISOString(),
+            exit_time: new Date().toISOString(),
+            status: 'EXITED',
+            confidence: 0.89,
+            camera_id: 'CAM-002',
+            vehicle_type: 'Motorcycle'
+          },
+          {
+            id: 3,
+            license_plate: 'B 9012 GHI',
+            entry_time: new Date(Date.now() - 7200000).toISOString(),
+            status: 'VIOLATION',
+            confidence: 0.72,
+            camera_id: 'CAM-001',
+            vehicle_type: 'Car'
+          }
+        ];
 
-        // Query projects for the current user
-        const { data, error } = await supabase
-          .from('project')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+        const mockStats: DashboardStats = {
+          totalVehicles: 156,
+          currentlyParked: 23,
+          todayEntries: 89,
+          violations: 3,
+          averageStayTime: '2h 15m',
+          occupancyRate: 76
+        };
 
-        if (error) {
-          throw error;
-        }
-
-        if (data) {
-          setProjects(data as Project[]);
-        }
+        setEntries(mockEntries);
+        setStats(mockStats);
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error('Error fetching parking data:', error);
         toast({
           title: 'Error',
-          description: 'Failed to load your projects. Please try again.',
+          description: 'Failed to load parking data. Please try again.',
           variant: 'destructive',
         });
       } finally {
@@ -81,16 +139,48 @@ export default function DashboardPage() {
       }
     };
 
-    fetchProjects();
-  }, [user, supabase, toast]);
+    fetchParkingData();
+  }, [toast]);
 
-  // Format date for display
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
     });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'PARKED':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100';
+      case 'EXITED':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
+      case 'VIOLATION':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'PARKED':
+        return <RiParkingBoxLine className="h-4 w-4" />;
+      case 'EXITED':
+        return <RiCheckLine className="h-4 w-4" />;
+      case 'VIOLATION':
+        return <RiAlertLine className="h-4 w-4" />;
+      default:
+        return <RiCarLine className="h-4 w-4" />;
+    }
   };
 
   return (
@@ -102,58 +192,55 @@ export default function DashboardPage() {
         className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <h1 className="text-3xl font-bold tracking-tight">ALPR Parking Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back! {user?.email} Here's an overview of your business
-            opportunities.
+            Real-time monitoring and management of parking activities
           </p>
         </div>
-        <Link href="/dashboard/new-project">
+        <div className="flex gap-2">
+          <Link href="/dashboard/monitoring">
+            <Button variant="outline">
+              <RiEyeLine className="mr-2 h-4 w-4" />
+              Live Monitoring
+            </Button>
+          </Link>
           <Button>
-            <RiAddCircleLine className="mr-2 h-4 w-4" />
-            New Project
+            <RiCameraLine className="mr-2 h-4 w-4" />
+            Camera Settings
           </Button>
-        </Link>
+        </div>
       </motion.div>
 
+      {/* Statistics Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
           {
-            title: 'Total Projects',
-            value: projects.length.toString(),
-            change: `${
-              projects.length > 0 ? '+' + projects.length : '0'
-            } since last month`,
-            icon: 'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6',
+            title: 'Total Vehicles Today',
+            value: stats.todayEntries.toString(),
+            change: '+12% from yesterday',
+            icon: RiCarLine,
+            color: 'text-blue-600'
           },
           {
-            title: 'Active Projects',
-            value: projects
-              .filter((p) => p.status === 'IN_PROGRESS')
-              .length.toString(),
-            change: 'Updated today',
-            icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
+            title: 'Currently Parked',
+            value: stats.currentlyParked.toString(),
+            change: `${stats.occupancyRate}% occupancy`,
+            icon: RiParkingBoxLine,
+            color: 'text-green-600'
           },
           {
-            title: 'Completed Projects',
-            value: projects
-              .filter((p) => p.status === 'SUCCESS')
-              .length.toString(),
-            change: 'Updated today',
-            icon: 'M2 10h20M2 14h20M2 18h20M2 6h20',
+            title: 'Avg. Stay Time',
+            value: stats.averageStayTime,
+            change: 'Updated real-time',
+            icon: RiTimeLine,
+            color: 'text-purple-600'
           },
           {
-            title: 'Success Rate',
-            value:
-              projects.length > 0
-                ? Math.round(
-                    (projects.filter((p) => p.status === 'SUCCESS').length /
-                      projects.length) *
-                      100,
-                  ) + '%'
-                : '0%',
-            change: 'Based on completion rate',
-            icon: 'M22 12h-4l-3 9L9 3l-3 9H2',
+            title: 'Violations',
+            value: stats.violations.toString(),
+            change: 'Requires attention',
+            icon: RiAlertLine,
+            color: 'text-red-600'
           },
         ].map((stat, index) => (
           <motion.div
@@ -167,19 +254,7 @@ export default function DashboardPage() {
                 <CardTitle className="text-sm font-medium">
                   {stat.title}
                 </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="h-4 w-4 text-muted-foreground"
-                  dangerouslySetInnerHTML={{
-                    __html: `<path d="${stat.icon}" />`,
-                  }}
-                />
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
@@ -190,17 +265,49 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Occupancy Rate */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <RiShieldCheckLine className="h-5 w-5 text-green-600" />
+              Parking Occupancy Rate
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <div className="w-full bg-gray-200 rounded-full h-3 dark:bg-gray-700">
+                  <div 
+                    className="bg-gradient-to-r from-green-500 to-blue-500 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${stats.occupancyRate}%` }}
+                  ></div>
+                </div>
+              </div>
+              <div className="text-2xl font-bold">{stats.occupancyRate}%</div>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              {stats.currentlyParked} of {Math.round(stats.currentlyParked / (stats.occupancyRate / 100))} spaces occupied
+            </p>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Recent Entries */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
         <h2 className="text-xl font-bold tracking-tight mb-4">
-          {loading ? 'Loading Projects...' : 'Recent Projects'}
+          {loading ? 'Loading Recent Entries...' : 'Recent ALPR Entries'}
         </h2>
         <div className="grid gap-4">
           {loading ? (
-            // Show loading skeleton if data is being fetched
             Array(3)
               .fill(0)
               .map((_, index) => (
@@ -214,71 +321,69 @@ export default function DashboardPage() {
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+                        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
                       </div>
                       <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mt-2"></div>
                     </CardHeader>
                     <CardContent>
                       <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
-                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
-                      <div className="mt-4 flex justify-end">
-                        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
-                      </div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
                     </CardContent>
                   </Card>
                 </motion.div>
               ))
-          ) : projects.length > 0 ? (
-            // Show actual projects
-            projects.map((project, index) => (
+          ) : entries.length > 0 ? (
+            entries.map((entry, index) => (
               <motion.div
-                key={project.id}
+                key={entry.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
               >
-                <Card>
+                <Card className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle>{project.title}</CardTitle>
-                      <div
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          project.status === 'SUCCESS'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
-                            : project.status === 'IN_PROGRESS'
-                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100'
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
-                        }`}
-                      >
-                        {project.status === 'SUCCESS'
-                          ? 'Completed'
-                          : project.status === 'IN_PROGRESS'
-                          ? 'In Progress'
-                          : 'Cancelled'}
-                      </div>
+                      <CardTitle className="text-lg font-mono">
+                        {entry.license_plate}
+                      </CardTitle>
+                      <Badge className={getStatusColor(entry.status)}>
+                        <span className="flex items-center gap-1">
+                          {getStatusIcon(entry.status)}
+                          {entry.status}
+                        </span>
+                      </Badge>
                     </div>
                     <CardDescription>
-                      Created on {formatDate(project.created_at)}
+                      {formatDate(entry.entry_time)} at {formatTime(entry.entry_time)}
+                      {entry.exit_time && ` - Exited at ${formatTime(entry.exit_time)}`}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">
-                      {project.description}
-                    </p>
-                    <div className="mt-4 flex justify-end">
-                      <Link href={`/dashboard/projects/${project.id}`}>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <p className="text-muted-foreground">Vehicle Type</p>
+                        <p className="font-medium">{entry.vehicle_type}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Camera ID</p>
+                        <p className="font-medium">{entry.camera_id}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground">Confidence</p>
+                        <p className="font-medium">{(entry.confidence * 100).toFixed(1)}%</p>
+                      </div>
+                      <div className="flex justify-end">
                         <Button variant="outline" size="sm">
                           View Details
                           <RiArrowRightLine className="ml-2 h-4 w-4" />
                         </Button>
-                      </Link>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
             ))
           ) : (
-            // Show message when no projects
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -287,16 +392,15 @@ export default function DashboardPage() {
               <Card>
                 <CardContent className="py-8">
                   <div className="text-center">
-                    <h3 className="text-lg font-medium mb-2">
-                      No projects yet
-                    </h3>
+                    <RiCarLine className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No entries today</h3>
                     <p className="text-muted-foreground mb-4">
-                      Create your first project to get started with GapMap AI.
+                      ALPR system is ready to detect and log vehicle entries.
                     </p>
-                    <Link href="/dashboard/new-project">
+                    <Link href="/dashboard/monitoring">
                       <Button>
-                        <RiAddCircleLine className="mr-2 h-4 w-4" />
-                        Create Project
+                        <RiEyeLine className="mr-2 h-4 w-4" />
+                        Start Monitoring
                       </Button>
                     </Link>
                   </div>
