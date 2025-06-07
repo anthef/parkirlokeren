@@ -47,18 +47,29 @@ export function AuthProvider({
   const supabase = createClient();
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+
     // Set initial state if not passed from server
     if (!initialUser) {
       const getUser = async () => {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        setUser(user as UserData | null);
-        setIsLoading(false);
+        try {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+          setUser(user as UserData | null);
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error getting user:', error);
+          setUser(null);
+          setIsLoading(false);
+        }
       };
 
       getUser();
-    }    // Set up auth state change listener
+    }
+
+    // Set up auth state change listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event: any, session: any) => {
@@ -70,7 +81,7 @@ export function AuthProvider({
     return () => {
       subscription.unsubscribe();
     };
-  }, [initialUser]);
+  }, [initialUser, supabase]);
 
   // Handle auth action results and navigation
   const handleAuthAction = (result: AuthActionResult) => {
