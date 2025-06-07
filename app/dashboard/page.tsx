@@ -204,10 +204,6 @@ export default function DashboardPage() {
               Live Monitoring
             </Button>
           </Link>
-          <Button>
-            <RiCameraLine className="mr-2 h-4 w-4" />
-            Camera Settings
-          </Button>
         </div>
       </motion.div>
 
