@@ -21,10 +21,13 @@ const fontHeading = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "BSS Parking",
+  title: "BSS Parking - Parkir Lo Keren",
   description:
     "Kelola Parkir dengan Teknologi Terdepan",
   generator: "v0.dev",
+  icons: {
+    icon: "new-logo-bss-parking-mobile.png",
+  }
 };
 
 export default function RootLayout({
