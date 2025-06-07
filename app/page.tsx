@@ -437,7 +437,7 @@ export default function Home() {
 
                     <CardFooter className="pt-2 pb-5">
                       <Link
-                        href={isLoggedIn ? "/dashboard/billing" : "/signup"}
+                        href={isLoggedIn ? "https://bssparking.com/" : "/signup"}
                         className="w-full"
                       >
                         <Button
