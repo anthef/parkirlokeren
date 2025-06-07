@@ -369,11 +369,218 @@ export default function DetailMonitoringPage() {
       setSortOrder('desc');
     }
   };
+  const exportToCSV = () => {
+    try {
+      // Create CSV headers
+      const headers = [
+        'ID',
+        'License Plate',
+        'Entry Time',
+        'Exit Time',
+        'Duration (minutes)',
+        'Status',
+        'Vehicle Type',
+        'Camera ID',
+        'Camera Location',
+        'Confidence (%)',
+        'Parking Fee (Rp)',
+        'Payment Status',
+        'Violation Type'
+      ];
+
+      // Convert data to CSV format
+      const csvData = filteredLogs.map(log => [
+        log.id,
+        log.license_plate,
+        new Date(log.entry_time).toLocaleString('id-ID'),
+        log.exit_time ? new Date(log.exit_time).toLocaleString('id-ID') : '',
+        log.duration || '',
+        log.status,
+        log.vehicle_type,
+        log.camera_id,
+        log.camera_location,
+        (log.confidence * 100).toFixed(1),
+        log.parking_fee ? log.parking_fee.toLocaleString('id-ID') : '',
+        log.payment_status || '',
+        log.violation_type || ''
+      ]);
+
+      // Create CSV content
+      const csvContent = [
+        headers.join(','),
+        ...csvData.map(row => 
+          row.map(cell => 
+            typeof cell === 'string' && cell.includes(',') 
+              ? `"${cell}"` 
+              : cell
+          ).join(',')
+        )
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `alpr-monitoring-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: 'Export Successful',
+        description: `CSV file with ${filteredLogs.length} records downloaded successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Export Failed',
+        description: 'Failed to export CSV file. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const exportToExcel = () => {
+    try {
+      // Create workbook data
+      const worksheetData = [
+        // Headers
+        [
+          'ID',
+          'License Plate',
+          'Entry Date',
+          'Entry Time',
+          'Exit Date', 
+          'Exit Time',
+          'Duration (minutes)',
+          'Status',
+          'Vehicle Type',
+          'Camera ID',
+          'Camera Location',
+          'Confidence (%)',
+          'Parking Fee (Rp)',
+          'Payment Status',
+          'Violation Type'
+        ],
+        // Data rows
+        ...filteredLogs.map(log => [
+          log.id,
+          log.license_plate,
+          new Date(log.entry_time).toLocaleDateString('id-ID'),
+          new Date(log.entry_time).toLocaleTimeString('id-ID'),
+          log.exit_time ? new Date(log.exit_time).toLocaleDateString('id-ID') : '',
+          log.exit_time ? new Date(log.exit_time).toLocaleTimeString('id-ID') : '',
+          log.duration || '',
+          log.status,
+          log.vehicle_type,
+          log.camera_id,
+          log.camera_location,
+          (log.confidence * 100).toFixed(1),
+          log.parking_fee || '',
+          log.payment_status || '',
+          log.violation_type || ''
+        ])
+      ];
+
+      // Create simple HTML table for Excel
+      const htmlTable = `
+        <table>
+          <thead>
+            <tr>
+              ${worksheetData[0].map(header => `<th style="background-color: #f0f0f0; font-weight: bold; border: 1px solid #ccc; padding: 8px;">${header}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${worksheetData.slice(1).map(row => 
+              `<tr>
+                ${row.map(cell => `<td style="border: 1px solid #ccc; padding: 8px;">${cell}</td>`).join('')}
+              </tr>`
+            ).join('')}
+          </tbody>
+        </table>
+      `;
+
+      // Create blob and download
+      const blob = new Blob([htmlTable], { 
+        type: 'application/vnd.ms-excel;charset=utf-8;' 
+      });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `alpr-monitoring-${new Date().toISOString().split('T')[0]}.xls`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: 'Export Successful',
+        description: `Excel file with ${filteredLogs.length} records downloaded successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Export Failed',
+        description: 'Failed to export Excel file. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const exportData = (format: 'csv' | 'excel') => {
+    if (format === 'csv') {
+      exportToCSV();
+    } else {
+      exportToExcel();
+    }
+  };
+
+  const refreshData = async () => {
+    setLoading(true);
     toast({
-      title: 'Export Started',
-      description: `Exporting data to ${format.toUpperCase()} format...`,
+      title: 'Refreshing Data',
+      description: 'Loading latest monitoring data...',
+    });
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const mockData = generateMockData();
+      setHourlyData(mockData.hourlyData);
+      setVehicleTypeData(mockData.vehicleTypeData);
+      setCameraPerformance(mockData.cameraPerformance);
+      setLogs(mockData.logs);
+      setFilteredLogs(mockData.logs);
+      
+      toast({
+        title: 'Data Refreshed',
+        description: 'All monitoring data has been updated successfully.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Refresh Failed',
+        description: 'Failed to refresh data. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetFilters = () => {
+    setSearchTerm('');
+    setDateFilter('today');
+    setStatusFilter('all');
+    setCameraFilter('all');
+    setVehicleTypeFilter('all');
+    setSortBy('entry_time');
+    setSortOrder('desc');
+    setCurrentPage(1);
+    
+    toast({
+      title: 'Filters Reset',
+      description: 'All filters have been reset to default values.',
     });
   };
 
@@ -407,10 +614,9 @@ export default function DetailMonitoringPage() {
           <Button variant="outline" onClick={() => exportData('csv')}>
             <RiDownloadLine className="mr-2 h-4 w-4" />
             Export CSV
-          </Button>
-          <Button variant="outline">
-            <RiRefreshLine className="mr-2 h-4 w-4" />
-            Refresh
+          </Button>          <Button variant="outline" onClick={refreshData} disabled={loading}>
+            <RiRefreshLine className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            {loading ? 'Refreshing...' : 'Refresh'}
           </Button>
         </div>
       </motion.div>
@@ -626,10 +832,8 @@ export default function DetailMonitoringPage() {
                     <SelectItem value="Bus">Bus</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-
-              <div className="flex items-end">
-                <Button variant="outline" className="w-full">
+              </div>              <div className="flex items-end">
+                <Button variant="outline" className="w-full" onClick={resetFilters}>
                   <RiRefreshLine className="mr-2 h-4 w-4" />
                   Reset
                 </Button>
@@ -814,17 +1018,10 @@ export default function DetailMonitoringPage() {
                       <TableCell colSpan={9} className="text-center py-8">
                         <div className="flex flex-col items-center gap-2">
                           <RiCarLine className="h-8 w-8 text-muted-foreground" />
-                          <p className="text-muted-foreground">No entries found matching your filters</p>
-                          <Button 
+                          <p className="text-muted-foreground">No entries found matching your filters</p>                          <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => {
-                              setSearchTerm('');
-                              setDateFilter('all');
-                              setStatusFilter('all');
-                              setCameraFilter('all');
-                              setVehicleTypeFilter('all');
-                            }}
+                            onClick={resetFilters}
                           >
                             Clear Filters
                           </Button>
