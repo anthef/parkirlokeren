@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
+  // ... your icons ...
   RiCameraLine, 
   RiRadioButtonLine,
   RiSignalWifiLine,
@@ -26,9 +27,12 @@ import {
   RiCarLine,
   RiTimeLine,
   RiShieldCheckLine,
-  RiRecordCircleLine
+  RiRecordCircleLine,
+  RiLoader4Line // Add a loader icon
 } from 'react-icons/ri';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image'; // Import Next.js Image for placeholders if needed
+import { useAuth } from '@/hooks/useAuth';
 
 // Define types for live monitoring
 interface CameraFeed {
@@ -62,7 +66,48 @@ interface SystemMetrics {
   uptime: string;
 }
 
+const LiveCameraFeed = ({ camera }: { camera: CameraFeed }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  // Use the API proxy route as the source
+  const feedUrl = `/api/camera-feed`;
+
+  if (hasError) {
+    return (
+      <div className="aspect-video w-full bg-black flex flex-col items-center justify-center text-white rounded-lg">
+        <RiSignalWifiLine className="h-10 w-10 mb-2 text-red-500" />
+        <p className="font-semibold">Feed Error</p>
+        <p className="text-sm text-muted-foreground">Could not load stream.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative aspect-video w-full bg-black flex items-center justify-center rounded-lg overflow-hidden">
+      {isLoading && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+          <RiLoader4Line className="h-10 w-10 animate-spin text-white" />
+          <p className="text-white mt-2">Connecting to {camera.name}...</p>
+        </div>
+      )}
+      
+      <img
+        src={feedUrl}
+        alt={`Live feed from ${camera.name}`}
+        className="w-full h-full object-cover z-0"
+        onLoad={() => setIsLoading(false)}
+        onError={() => {
+          setIsLoading(false);
+          setHasError(true);
+        }}
+      />
+    </div>
+  );
+};
+
 export default function MonitoringPage() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const [cameras, setCameras] = useState<CameraFeed[]>([]);
   const [liveDetections, setLiveDetections] = useState<LiveDetection[]>([]);
@@ -273,6 +318,50 @@ export default function MonitoringPage() {
             Refresh
           </Button>
         </div>
+      </motion.div>
+
+      {/* --- NEW SECTION: LIVE CAMERA FEEDS --- */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <RiCameraLine className="h-6 w-6 text-blue-600" />
+              Live Camera Feeds
+            </CardTitle>
+            <CardDescription>Real-time video streams from active cameras.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {user ? (
+              <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+                {cameras
+                  .filter((cam) => cam.status === 'ONLINE')
+                  .map((camera) => (
+                    <div key={camera.id}>
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="font-medium">{camera.name}</h4>
+                        <p className="text-sm text-muted-foreground">{camera.location}</p>
+                      </div>
+                      <LiveCameraFeed camera={camera} />
+                    </div>
+                  ))}
+                {cameras.filter((cam) => cam.status === 'ONLINE').length === 0 && (
+                  <p className="text-muted-foreground col-span-full text-center py-4">
+                    No cameras are currently online.
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground bg-slate-100 dark:bg-slate-900/50 rounded-lg">
+                <RiEyeOffLine className="mx-auto h-8 w-8 mb-2" />
+                Please log in to view live camera feeds.
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </motion.div>
 
       {/* System Metrics */}
