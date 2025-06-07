@@ -93,7 +93,10 @@ export function AceternitySidebar({ email }: { email: string }) {
               className="h-11 w-11"
             />
               )}
-              {isCollapsed && <span className="text-lg font-semibold">G</span>}
+              {isCollapsed && <img
+              src="/bss logo.png"
+              alt="Logo"
+              className="h-6 w-6"/>}
             </div>
             <div className="space-y-1">
               {navItems.map((item) => (

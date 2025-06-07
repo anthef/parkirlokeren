@@ -163,21 +163,6 @@ export function SignupForm() {
           </span>
         </div>
       </div>
-
-      <div className="mt-6 grid grid-cols-2 gap-4">
-        <Button variant="outline" type="button">
-          <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-            {/* SVG paths */}
-          </svg>
-          Google
-        </Button>
-        <Button variant="outline" type="button">
-          <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-            {/* SVG paths */}
-          </svg>
-          Facebook
-        </Button>
-      </div>
     </motion.div>
   );
 }
