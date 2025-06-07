@@ -18,6 +18,7 @@ type UserData = {
   email: string | null;
   user_metadata: any;
   app_metadata: any;
+  created_at: string;
   // Add other fields you need
 };
 
@@ -57,12 +58,10 @@ export function AuthProvider({
       };
 
       getUser();
-    }
-
-    // Set up auth state change listener
+    }    // Set up auth state change listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((event: any, session: any) => {
       setUser(session?.user as UserData | null);
       setIsLoading(false);
     });
