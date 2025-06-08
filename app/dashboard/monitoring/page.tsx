@@ -122,10 +122,8 @@ export default function MonitoringPage() {
   const [isMonitoring, setIsMonitoring] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  // Simulate real-time data updates
   useEffect(() => {
     const initializeData = () => {
-      // Mock camera data
       const mockCameras: CameraFeed[] = [
         {
           id: 'CAM-001',
@@ -141,11 +139,11 @@ export default function MonitoringPage() {
           id: 'CAM-002',
           name: 'Exit Gate',
           location: 'Gate B',
-          status: 'ONLINE',
+          status: 'OFFLINE',
           resolution: '1920x1080',
           fps: 30,
           lastPing: new Date().toISOString(),
-          isRecording: true
+          isRecording: false
         },
         {
           id: 'CAM-003',
@@ -161,11 +159,11 @@ export default function MonitoringPage() {
           id: 'CAM-004',
           name: 'Parking Area 1',
           location: 'Zone A',
-          status: 'ONLINE',
+          status: 'OFFLINE',
           resolution: '1920x1080',
           fps: 25,
           lastPing: new Date().toISOString(),
-          isRecording: true
+          isRecording: false
         }
       ];
 
@@ -186,12 +184,10 @@ export default function MonitoringPage() {
     initializeData();
   }, []);
 
-  // Simulate real-time detections
   useEffect(() => {
     if (!isMonitoring) return;
 
     const interval = setInterval(() => {
-      // Simulate new detection
       const mockDetection: LiveDetection = {
         id: Date.now(),
         camera_id: ['CAM-001', 'CAM-002', 'CAM-004'][Math.floor(Math.random() * 3)],
