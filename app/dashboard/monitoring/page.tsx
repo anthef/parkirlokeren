@@ -210,7 +210,7 @@ export default function MonitoringPage() {
         totalDetections: prev.totalDetections + 1
       }));
 
-    }, Math.random() * 15000 + 9000); 
+    }, Math.random() * 15000 + 120000); 
 
     return () => clearInterval(interval);
   }, [isMonitoring, toast]);

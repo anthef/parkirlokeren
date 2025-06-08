@@ -72,13 +72,11 @@ BSS Parking adalah sistem manajemen parkir pintar yang menggunakan teknologi **A
 │   │   ├── forgot-password/
 │   │   └── reset-password/
 │   ├── api/                 # API routes
-│   │   ├── camera-feed/     # Camera feed proxy
-│   │   └── police-reports/  # Police report API
+│   │   └── camera-feed/     # Camera feed proxy
 │   ├── dashboard/           # Dashboard pages
 │   │   ├── monitoring/      # Live monitoring
 │   │   └── settings/        # Settings page
-│   ├── detail-monitoring/   # Detailed analytics
-│   └── police-report/       # Police report module
+│   └── detail-monitoring/   # Detailed analytics
 ├── components/              # Reusable components
 │   ├── ui/                  # UI component library
 │   ├── auth/                # Auth-related components
@@ -127,8 +125,9 @@ bun install
 3. **Setup environment variables**
 Buat file `.env.local` dan tambahkan:
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_URL=https://ggexknjpqqqmjcidxedg.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdnZXhrbmpwcXFxbWpjaWR4ZWRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzNjgwMjIsImV4cCI6MjA2Mzk0NDAyMn0.n4nK97g6pIt96n8riMDu-Ud-EMt9KxHJR-tjDEXNIP8
+NEXT_PUBLIC_DJANGO_API_URL=https://parkirlokeren-be.ariqmau.org
 ```
 
 4. **Run development server**
@@ -241,6 +240,7 @@ npm start
 Pastikan set environment variables berikut:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_DJANGO_API_URL`
 
 ## 📊 Performance
 
@@ -285,11 +285,6 @@ GET /api/camera-feed
 // Proxy untuk live camera streams
 ```
 
-### Police Reports API
-```typescript
-GET /api/police-reports
-// Fetch police report data
-```
 
 ## 🤝 Contributing
 
@@ -308,7 +303,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Untuk support dan pertanyaan:
 - Email: support@bssparking.com
 - Documentation: [docs.bssparking.com](https://docs.bssparking.com)
-- Issues: [GitHub Issues](https://github.com/your-repo/issues)
+- Issues: [GitHub Issues](https://github.com/anthef/parkirlokeren/issues)
 
 ## 🎯 Roadmap
 
