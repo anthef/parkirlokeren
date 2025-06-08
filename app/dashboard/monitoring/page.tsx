@@ -210,12 +210,7 @@ export default function MonitoringPage() {
         totalDetections: prev.totalDetections + 1
       }));
 
-      // Show toast notification
-      toast({
-        title: 'New Vehicle Detected',
-        description: `License plate: ${mockDetection.license_plate} detected at ${getCameraName(mockDetection.camera_id)}`,
-      });
-    }, Math.random() * 15000 + 5000); // Random interval between 5-20 seconds
+    }, Math.random() * 15000 + 9000); 
 
     return () => clearInterval(interval);
   }, [isMonitoring, toast]);

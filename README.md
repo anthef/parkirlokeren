@@ -1,36 +1,335 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BSS Parking - ALPR Parking Management System
 
-## Getting Started
+![BSS Parking Logo](public/new-logo-bss-parking-mobile.png)
 
-First, run the development server:
+BSS Parking adalah sistem manajemen parkir pintar yang menggunakan teknologi **ALPR (Automatic License Plate Recognition)** untuk monitoring dan pengelolaan area parkir secara real-time. Sistem ini dibangun dengan teknologi modern untuk memberikan solusi parkir yang efisien, akurat, dan terintegrasi.
 
+## 🚀 Fitur Utama
+
+### 🎯 Teknologi ALPR
+- **Deteksi Otomatis**: Kamera ALPR mendeteksi plat nomor kendaraan secara otomatis dengan akurasi tinggi
+- **Validasi Real-time**: Sistem AI memvalidasi dan memverifikasi data plat nomor dengan confidence score
+- **Multi-Camera Support**: Mendukung multiple kamera untuk berbagai titik masuk dan keluar
+
+### 📊 Dashboard & Monitoring
+- **Live Monitoring**: Monitoring real-time status kamera, deteksi terbaru, dan feed video langsung
+- **Analytics Dashboard**: Statistik komprehensif dengan grafik dan chart interaktif
+- **System Health**: Monitor performa sistem, latency, dan uptime kamera
+- **Alert System**: Notifikasi otomatis untuk pelanggaran dan aktivitas mencurigakan
+
+### 📋 Manajemen Data
+- **Log & History**: Pencatatan otomatis semua aktivitas parkir dengan timestamp dan durasi
+- **Export Data**: Export data ke Excel dan CSV untuk analisis lebih lanjut
+- **Advanced Filtering**: Filter berdasarkan tanggal, status, kamera, dan tipe kendaraan
+- **Vehicle Type Detection**: Deteksi otomatis jenis kendaraan (Mobil, Motor, Truk, Bus)
+
+### 🔐 Keamanan & Autentikasi
+- **User Authentication**: Sistem login/register dengan Supabase
+- **Role-based Access**: Kontrol akses berdasarkan peran pengguna
+- **Secure Routes**: Middleware protection untuk halaman sensitif
+
+## 🛠️ Tech Stack
+
+### Frontend Framework
+- **Next.js 15** - React framework dengan App Router
+- **TypeScript** - Type-safe development
+- **React 18** - UI library dengan modern features
+
+### Styling & UI
+- **Tailwind CSS** - Utility-first CSS framework
+- **Radix UI** - Headless UI components
+- **Framer Motion** - Animation library
+- **Lucide React** - Icon library
+- **React Icons** - Additional icons
+
+### Backend & Database
+- **Supabase** - Backend-as-a-Service (Auth, Database, Storage)
+- **Next.js API Routes** - Server-side API endpoints
+
+### Data Visualization
+- **Recharts** - Chart library untuk analytics dashboard
+- **Date-fns** - Date manipulation library
+
+### Development Tools
+- **ESLint** - Code linting
+- **PostCSS** - CSS processing
+- **Autoprefixer** - CSS vendor prefixes
+
+### Utility Libraries
+- **React Hook Form** - Form management
+- **Zod** - Schema validation
+- **XLSX** - Excel file generation
+- **Clsx** - Conditional CSS classes
+- **Class Variance Authority** - Component variants
+
+## 📁 Struktur Proyek
+
+```
+├── app/                      # Next.js App Router
+│   ├── (auth-pages)/        # Authentication pages
+│   │   ├── login/
+│   │   ├── signup/
+│   │   ├── forgot-password/
+│   │   └── reset-password/
+│   ├── api/                 # API routes
+│   │   ├── camera-feed/     # Camera feed proxy
+│   │   └── police-reports/  # Police report API
+│   ├── dashboard/           # Dashboard pages
+│   │   ├── monitoring/      # Live monitoring
+│   │   └── settings/        # Settings page
+│   ├── detail-monitoring/   # Detailed analytics
+│   └── police-report/       # Police report module
+├── components/              # Reusable components
+│   ├── ui/                  # UI component library
+│   ├── auth/                # Auth-related components
+│   ├── navbar.tsx           # Navigation bar
+│   ├── footer.tsx           # Footer component
+│   └── theme-provider.tsx   # Theme management
+├── hooks/                   # Custom React hooks
+│   ├── useAuth.tsx          # Authentication hook
+│   ├── use-toast.ts         # Toast notifications
+│   └── use-mobile.tsx       # Mobile detection
+├── lib/                     # Utility libraries
+│   ├── utils.ts             # Helper functions
+│   └── validations/         # Zod schemas
+├── public/                  # Static assets
+├── styles/                  # Global styles
+└── utils/                   # Utility functions
+    └── supabase/            # Supabase configuration
+```
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm, yarn, pnpm, atau bun
+- Supabase account (untuk backend)
+
+### Installation
+
+1. **Clone repository**
+```bash
+git clone <repository-url>
+cd parkirlokeren
+```
+
+2. **Install dependencies**
+```bash
+npm install
+# atau
+yarn install
+# atau
+pnpm install
+# atau
+bun install
+```
+
+3. **Setup environment variables**
+Buat file `.env.local` dan tambahkan:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. **Run development server**
 ```bash
 npm run dev
-# or
+# atau
 yarn dev
-# or
+# atau
 pnpm dev
-# or
+# atau
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. **Open browser**
+Buka [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📱 Fitur Aplikasi
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Landing Page
+- Hero section dengan animasi Framer Motion
+- Feature showcase dengan teknologi ALPR
+- Testimonial dari pengguna
+- Pricing plans (Basic, Professional, Enterprise)
+- FAQ section
 
-## Learn More
+### Authentication
+- Login/Register dengan Supabase Auth
+- Forgot password functionality
+- Protected routes dengan middleware
 
-To learn more about Next.js, take a look at the following resources:
+### Dashboard Utama
+- Overview statistik parkir real-time
+- Recent vehicle detections
+- Quick actions dan shortcuts
+- System status indicators
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Live Monitoring
+- Real-time camera feeds
+- Live detection log dengan confidence score
+- System metrics (latency, accuracy, uptime)
+- Camera status monitoring
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Detail Monitoring & Analytics
+- Comprehensive data table dengan filtering
+- Interactive charts (hourly traffic, vehicle types)
+- Camera performance analytics
+- Export functionality (Excel/CSV)
+- Advanced search dan pagination
 
-## Deploy on Vercel
+### Settings
+- User profile management
+- System configuration
+- Notification preferences
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎨 UI/UX Features
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Design System
+- **Dark/Light Theme**: Toggle tema dengan next-themes
+- **Responsive Design**: Mobile-first approach
+- **Accessibility**: ARIA labels dan keyboard navigation
+- **Component Library**: Konsisten design dengan Radix UI
+
+### Animations
+- **Page Transitions**: Smooth transitions dengan Framer Motion
+- **Loading States**: Skeleton loaders dan spinners
+- **Interactive Elements**: Hover states dan micro-interactions
+
+### Data Visualization
+- **Real-time Charts**: Live updating dengan Recharts
+- **Interactive Tables**: Sorting, filtering, pagination
+- **Status Indicators**: Color-coded status badges
+- **Progress Bars**: Visual feedback untuk metrics
+
+## 🔧 Konfigurasi
+
+### Tailwind CSS
+Konfigurasi custom di `tailwind.config.ts` dengan:
+- Custom color palette
+- Animation utilities
+- Component variants
+- Dark mode support
+
+### Next.js
+- App Router dengan TypeScript
+- API routes untuk backend integration
+- Middleware untuk authentication
+- Image optimization
+
+### Supabase
+- Authentication dengan email/password
+- Real-time subscriptions (future)
+- Row Level Security (RLS)
+- File storage untuk images
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+1. Push code ke GitHub
+2. Connect repository di [Vercel](https://vercel.com)
+3. Set environment variables
+4. Deploy otomatis
+
+### Manual Deployment
+```bash
+npm run build
+npm start
+```
+
+### Environment Variables
+Pastikan set environment variables berikut:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+## 📊 Performance
+
+### Metrics
+- **Core Web Vitals**: Optimized untuk performa
+- **Bundle Size**: Tree-shaking dan code splitting
+- **Loading Speed**: Image optimization dan lazy loading
+- **SEO**: Meta tags dan structured data
+
+### Optimization
+- Next.js Image component untuk optimasi gambar
+- Dynamic imports untuk code splitting
+- Service worker untuk caching (future)
+- Database query optimization
+
+## 🧪 Testing
+
+### Testing Stack (Future)
+- **Unit Tests**: Jest + React Testing Library
+- **E2E Tests**: Playwright atau Cypress
+- **Component Tests**: Storybook
+- **API Tests**: Supertest
+
+## 🔐 Security
+
+### Authentication
+- Supabase Auth dengan secure tokens
+- Password hashing dengan bcrypt
+- Session management
+
+### Data Protection
+- HTTPS enforcement
+- Input validation dengan Zod
+- SQL injection protection
+- XSS protection
+
+## 📚 API Documentation
+
+### Camera Feed API
+```typescript
+GET /api/camera-feed
+// Proxy untuk live camera streams
+```
+
+### Police Reports API
+```typescript
+GET /api/police-reports
+// Fetch police report data
+```
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+Untuk support dan pertanyaan:
+- Email: support@bssparking.com
+- Documentation: [docs.bssparking.com](https://docs.bssparking.com)
+- Issues: [GitHub Issues](https://github.com/your-repo/issues)
+
+## 🎯 Roadmap
+
+### Phase 1 (Current)
+- [x] Basic ALPR integration
+- [x] Dashboard monitoring
+- [x] User authentication
+- [x] Data export functionality
+
+### Phase 2 (Next)
+- [ ] Mobile app dengan React Native
+- [ ] Real-time notifications
+- [ ] Payment integration
+- [ ] Advanced analytics
+
+### Phase 3 (Future)
+- [ ] AI-powered violation detection
+- [ ] Integration dengan sistem parkir meter
+- [ ] Multi-tenant support
+- [ ] Advanced reporting dashboard
+
+---
+
+**BSS Parking** - Transforming parking management with intelligent ALPR technology 🚗📊
