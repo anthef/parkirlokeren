@@ -169,7 +169,7 @@ export default function MonitoringPage() {
 
       const mockMetrics: SystemMetrics = {
         totalCameras: 4,
-        activeCameras: 3,
+        activeCameras: 1,
         totalDetections: 1247,
         processingLatency: 120,
         accuracy: 94.7,
