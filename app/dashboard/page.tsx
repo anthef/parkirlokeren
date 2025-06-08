@@ -368,12 +368,6 @@ export default function DashboardPage() {
                         <p className="text-muted-foreground">Confidence</p>
                         <p className="font-medium">{(entry.confidence * 100).toFixed(1)}%</p>
                       </div>
-                      <div className="flex justify-end">
-                        <Button variant="outline" size="sm">
-                          View Details
-                          <RiArrowRightLine className="ml-2 h-4 w-4" />
-                        </Button>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>
