@@ -142,7 +142,7 @@ bun dev
 ```
 
 5. **Open browser**
-Buka [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
+Buka [http://localhost:3000](http://localhost:3000) atau akses deployment [https://parkirlokeren.vercel.app/](https://parkirlokeren.vercel.app/) untuk melihat aplikasi.
 
 ## 📱 Fitur Aplikasi
 
