@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
 import { useToast } from '@/hooks/use-toast';
 import {
   Card,
@@ -75,7 +76,7 @@ interface DetailedLogEntry {
   license_plate: string;
   entry_time: string;
   exit_time?: string;
-  duration?: number; // in minutes
+  duration?: number; 
   status: 'PARKED' | 'EXITED' | 'VIOLATION' | 'OVERSTAY';
   confidence: number;
   camera_id: string;
@@ -248,11 +249,8 @@ export default function DetailMonitoringPage() {
     fetchData();
   }, []);
 
-  // Filter and search logic
   useEffect(() => {
     let filtered = [...logs];
-
-    // Search filter
     if (searchTerm) {
       filtered = filtered.filter(log => 
         log.license_plate.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -368,10 +366,8 @@ export default function DetailMonitoringPage() {
       setSortBy(field);
       setSortOrder('desc');
     }
-  };
-  const exportToCSV = () => {
+  };  const exportToCSV = () => {
     try {
-      // Create CSV headers
       const headers = [
         'ID',
         'License Plate',
@@ -388,7 +384,6 @@ export default function DetailMonitoringPage() {
         'Violation Type'
       ];
 
-      // Convert data to CSV format
       const csvData = filteredLogs.map(log => [
         log.id,
         log.license_plate,
@@ -405,15 +400,18 @@ export default function DetailMonitoringPage() {
         log.violation_type || ''
       ]);
 
-      // Create CSV content
-      const csvContent = [
+      // Create CSV content with UTF-8 BOM
+      const csvContent = '\uFEFF' + [
         headers.join(','),
         ...csvData.map(row => 
-          row.map(cell => 
-            typeof cell === 'string' && cell.includes(',') 
-              ? `"${cell}"` 
-              : cell
-          ).join(',')
+          row.map(cell => {
+            const cellStr = String(cell);
+            // Escape cells that contain commas, quotes, or newlines
+            if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+              return '"' + cellStr.replace(/"/g, '""') + '"';
+            }
+            return cellStr;
+          }).join(',')
         )
       ].join('\n');
 
@@ -427,98 +425,84 @@ export default function DetailMonitoringPage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Clean up
+      URL.revokeObjectURL(url);
 
       toast({
         title: 'Export Successful',
         description: `CSV file with ${filteredLogs.length} records downloaded successfully.`,
       });
     } catch (error) {
+      console.error('CSV export error:', error);
       toast({
         title: 'Export Failed',
         description: 'Failed to export CSV file. Please try again.',
         variant: 'destructive',
       });
     }
-  };
-
-  const exportToExcel = () => {
+  };  const exportToExcel = () => {
     try {
-      // Create workbook data
-      const worksheetData = [
-        // Headers
-        [
-          'ID',
-          'License Plate',
-          'Entry Date',
-          'Entry Time',
-          'Exit Date', 
-          'Exit Time',
-          'Duration (minutes)',
-          'Status',
-          'Vehicle Type',
-          'Camera ID',
-          'Camera Location',
-          'Confidence (%)',
-          'Parking Fee (Rp)',
-          'Payment Status',
-          'Violation Type'
-        ],
-        // Data rows
-        ...filteredLogs.map(log => [
-          log.id,
-          log.license_plate,
-          new Date(log.entry_time).toLocaleDateString('id-ID'),
-          new Date(log.entry_time).toLocaleTimeString('id-ID'),
-          log.exit_time ? new Date(log.exit_time).toLocaleDateString('id-ID') : '',
-          log.exit_time ? new Date(log.exit_time).toLocaleTimeString('id-ID') : '',
-          log.duration || '',
-          log.status,
-          log.vehicle_type,
-          log.camera_id,
-          log.camera_location,
-          (log.confidence * 100).toFixed(1),
-          log.parking_fee || '',
-          log.payment_status || '',
-          log.violation_type || ''
-        ])
+      // Create workbook and worksheet
+      const workbook = XLSX.utils.book_new();
+      
+      // Prepare data for Excel
+      const excelData = filteredLogs.map(log => ({
+        'ID': log.id,
+        'License Plate': log.license_plate,
+        'Entry Date': new Date(log.entry_time).toLocaleDateString('id-ID'),
+        'Entry Time': new Date(log.entry_time).toLocaleTimeString('id-ID'),
+        'Exit Date': log.exit_time ? new Date(log.exit_time).toLocaleDateString('id-ID') : '',
+        'Exit Time': log.exit_time ? new Date(log.exit_time).toLocaleTimeString('id-ID') : '',
+        'Duration (minutes)': log.duration || '',
+        'Status': log.status,
+        'Vehicle Type': log.vehicle_type,
+        'Camera ID': log.camera_id,
+        'Camera Location': log.camera_location,
+        'Confidence (%)': (log.confidence * 100).toFixed(1),
+        'Parking Fee (Rp)': log.parking_fee || '',
+        'Payment Status': log.payment_status || '',
+        'Violation Type': log.violation_type || ''
+      }));
+
+      // Create worksheet from the data
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      
+      // Set column widths for better readability
+      const columnWidths = [
+        { wch: 8 },   // ID
+        { wch: 15 },  // License Plate
+        { wch: 12 },  // Entry Date
+        { wch: 10 },  // Entry Time
+        { wch: 12 },  // Exit Date
+        { wch: 10 },  // Exit Time
+        { wch: 18 },  // Duration
+        { wch: 12 },  // Status
+        { wch: 15 },  // Vehicle Type
+        { wch: 12 },  // Camera ID
+        { wch: 18 },  // Camera Location
+        { wch: 15 },  // Confidence
+        { wch: 18 },  // Parking Fee
+        { wch: 15 },  // Payment Status
+        { wch: 18 }   // Violation Type
       ];
+      worksheet['!cols'] = columnWidths;
 
-      // Create simple HTML table for Excel
-      const htmlTable = `
-        <table>
-          <thead>
-            <tr>
-              ${worksheetData[0].map(header => `<th style="background-color: #f0f0f0; font-weight: bold; border: 1px solid #ccc; padding: 8px;">${header}</th>`).join('')}
-            </tr>
-          </thead>
-          <tbody>
-            ${worksheetData.slice(1).map(row => 
-              `<tr>
-                ${row.map(cell => `<td style="border: 1px solid #ccc; padding: 8px;">${cell}</td>`).join('')}
-              </tr>`
-            ).join('')}
-          </tbody>
-        </table>
-      `;
-
-      // Create blob and download
-      const blob = new Blob([htmlTable], { 
-        type: 'application/vnd.ms-excel;charset=utf-8;' 
-      });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `alpr-monitoring-${new Date().toISOString().split('T')[0]}.xls`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'ALPR Monitoring Data');
+      
+      // Generate filename with current date
+      const filename = `alpr-monitoring-${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      // Write and download the file
+      XLSX.writeFile(workbook, filename);
 
       toast({
         title: 'Export Successful',
         description: `Excel file with ${filteredLogs.length} records downloaded successfully.`,
       });
     } catch (error) {
+      console.error('Excel export error:', error);
       toast({
         title: 'Export Failed',
         description: 'Failed to export Excel file. Please try again.',
